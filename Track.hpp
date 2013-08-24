@@ -30,6 +30,7 @@ private:
     thor::BigSprite   trackSprite;
 
     std::vector<Checkpoint> checkpoints;
+    std::vector<Checkpoint>::iterator nextCheckpoint = checkpoints.end();
 
     Car car;
 };

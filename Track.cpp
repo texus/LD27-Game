@@ -48,40 +48,41 @@ Track::Track(const std::string& name, sf::RenderWindow& window) :
             }
         }
 
-        if (checkpoints.empty())
+        if (checkpoints.size() < 2)
             throw std::runtime_error("No checkpoints were loaded from '" + name + ".dat'.");
+
+        nextCheckpoint = checkpoints.begin();
     }
 
     car.setPosition(sf::Vector2f(checkpoints[0].position));
     window.setView(sf::View(sf::FloatRect(car.getPosition().x - (SCREEN_WIDTH / 2.0), car.getPosition().y - (SCREEN_HEIGHT / 2.0), SCREEN_WIDTH, SCREEN_HEIGHT)));
 }
-
+#include <iostream>
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Track::update(float elapsedTime)
 {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-        car.addVelocity(-1.0 / TIME_TO_REACH_MAX_VELOCITY, 0, elapsedTime);
-    else
-        car.removeVelocity(-3.0 / TIME_TO_REACH_MAX_VELOCITY, 0, elapsedTime);
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-        car.addVelocity(0, -1.0 / TIME_TO_REACH_MAX_VELOCITY, elapsedTime);
-    else
-        car.removeVelocity(0, -3.0 / TIME_TO_REACH_MAX_VELOCITY, elapsedTime);
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-        car.addVelocity(1.0 / TIME_TO_REACH_MAX_VELOCITY, 0, elapsedTime);
-    else
-        car.removeVelocity(3.0 / TIME_TO_REACH_MAX_VELOCITY, 0, elapsedTime);
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-        car.addVelocity(0, 1.0 / TIME_TO_REACH_MAX_VELOCITY, elapsedTime);
-    else
-        car.removeVelocity(0, 3.0 / TIME_TO_REACH_MAX_VELOCITY, elapsedTime);
+    static float elapsed = 0;
+    elapsed += elapsedTime;
 
     car.update(trackArea, elapsedTime);
     window.setView(sf::View(sf::FloatRect(car.getPosition().x - (SCREEN_WIDTH / 2.0), car.getPosition().y - (SCREEN_HEIGHT / 2.0), SCREEN_WIDTH, SCREEN_HEIGHT)));
+
+    sf::Vector2f checkpointPosition(nextCheckpoint->position.x, nextCheckpoint->position.y);
+    sf::Vector2f carPosition = car.getPosition();
+
+    if (std::sqrt(std::pow(checkpointPosition.x - carPosition.x, 2) + std::pow(checkpointPosition.y - carPosition.y, 2)) < nextCheckpoint->radius)
+    {
+        elapsed = 0;
+        ++nextCheckpoint;
+        if (nextCheckpoint == checkpoints.end())
+        {
+            exit(1);
+        }
+    }
+
+    if (elapsed > 10)
+        exit(2);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,6 +90,11 @@ void Track::update(float elapsedTime)
 void Track::draw() const
 {
     window.draw(trackSprite);
+
+    sf::CircleShape checkpoint(nextCheckpoint->radius);
+    checkpoint.setFillColor(sf::Color(255, 255, 0, 150));
+    checkpoint.setPosition(nextCheckpoint->position.x - nextCheckpoint->radius, nextCheckpoint->position.y - nextCheckpoint->radius);
+    window.draw(checkpoint);
 
     car.draw(window, sf::RenderStates());
 }

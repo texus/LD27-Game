@@ -14,9 +14,6 @@ public:
 
     Car();
 
-    void addVelocity(float x, float y, float elapsedTime);
-    void removeVelocity(float x, float y, float elapsedTime);
-
     void update(const sf::Image& trackArea, float elapsedTime);
     void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
