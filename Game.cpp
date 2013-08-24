@@ -8,6 +8,8 @@ Game::Game() :
 {
     if (gui.setGlobalFont("gui/DejaVuSans.ttf") == false)
         throw std::runtime_error("Exception while loading font. Files are missing.");
+
+    beep.openFromFile("beep.wav");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,7 +67,19 @@ void Game::mainLoop()
     while (window.isOpen())
     {
         handleEvents();
-        update(clock.restart().asSeconds());
+
+        int ret = update(clock.restart().asSeconds());
+        if (ret == 1)
+        {
+            window.close();
+            std::cout << "Level completed" << std::endl;
+        }
+        else if (ret == 2)
+        {
+            window.close();
+            std::cout << "Level FAILED" << std::endl;
+        }
+
         render();
 
         sf::sleep(sf::milliseconds(1));
@@ -86,9 +100,35 @@ void Game::handleEvents()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Game::update(float elapsedTime)
+int Game::update(float elapsedTime)
 {
-    track->update(elapsedTime);
+    int ret = track->update(elapsedTime);
+
+    if (ret == 1)
+    {
+        // Checkpoint reached
+        countdown = 10;
+        return 0;
+    }
+    else if (ret == 2)
+    {
+        // Level finished
+        return 1;
+    }
+
+    countdown -= elapsedTime;
+
+    if (countdown <= 0)
+        return 2;
+
+    if (static_cast<int>(countdown + 0.5) != roundedCountdown)
+    {
+        roundedCountdown = static_cast<int>(countdown + 0.5);
+        beep.setVolume(100 - roundedCountdown * 10);
+        beep.play();
+    }
+
+    return 0;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,8 +136,16 @@ void Game::update(float elapsedTime)
 void Game::render()
 {
     window.clear();
+
     track->draw();
+
+    sf::Text text(std::to_string(roundedCountdown), gui.getGlobalFont(), 30);
+    text.setColor(sf::Color(255 - ((countdown / 10.0) * 255), (countdown / 10.0) * 255, 0));
+    text.setPosition(window.getView().getCenter() - (window.getView().getSize() / 2.0f));
+    window.draw(text);
+
     gui.draw();
+
     window.display();
 }
 

@@ -57,14 +57,11 @@ Track::Track(const std::string& name, sf::RenderWindow& window) :
     car.setPosition(sf::Vector2f(checkpoints[0].position));
     window.setView(sf::View(sf::FloatRect(car.getPosition().x - (SCREEN_WIDTH / 2.0), car.getPosition().y - (SCREEN_HEIGHT / 2.0), SCREEN_WIDTH, SCREEN_HEIGHT)));
 }
-#include <iostream>
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Track::update(float elapsedTime)
+int Track::update(float elapsedTime)
 {
-    static float elapsed = 0;
-    elapsed += elapsedTime;
-
     car.update(trackArea, elapsedTime);
     window.setView(sf::View(sf::FloatRect(car.getPosition().x - (SCREEN_WIDTH / 2.0), car.getPosition().y - (SCREEN_HEIGHT / 2.0), SCREEN_WIDTH, SCREEN_HEIGHT)));
 
@@ -73,16 +70,14 @@ void Track::update(float elapsedTime)
 
     if (std::sqrt(std::pow(checkpointPosition.x - carPosition.x, 2) + std::pow(checkpointPosition.y - carPosition.y, 2)) < nextCheckpoint->radius)
     {
-        elapsed = 0;
         ++nextCheckpoint;
         if (nextCheckpoint == checkpoints.end())
-        {
-            exit(1);
-        }
+            return 2;
+        else
+            return 1;
     }
 
-    if (elapsed > 10)
-        exit(2);
+    return 0;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

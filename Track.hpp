@@ -17,7 +17,7 @@ public:
 
     Track(const std::string& name, sf::RenderWindow& window);
 
-    void update(float elapsedTime);
+    int update(float elapsedTime);
     void draw() const;
 
 
