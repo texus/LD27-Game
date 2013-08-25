@@ -16,6 +16,11 @@ Game::Game() :
      || (!track3.openFromFile("DST-TheMusic.wav")))
         throw std::runtime_error("Can't load sound. Files are missing.");
 
+    cars.emplace(cars.end(), 260, 1.0, "Car1.png");
+    cars.emplace(cars.end(), 375, 2.25, "Car2.png");
+    cars.emplace(cars.end(), 500, 3, "Car3.png");
+    currentCar = cars.begin();
+
     loadTrackList();
 }
 
@@ -42,6 +47,12 @@ void Game::runMenuScreen()
     playButton->setSize(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 8);
     playButton->bindCallback([this](){ gui.removeAllWidgets(); runLevelSelection(); }, tgui::Button::LeftMouseClicked);
 
+    tgui::Button::Ptr selectCarButton(*grid);
+    selectCarButton->load("gui/Black.conf");
+    selectCarButton->setText("Select car");
+    selectCarButton->setSize(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 8);
+    selectCarButton->bindCallback([this](){ gui.removeAllWidgets(); runCarSelection(); }, tgui::Button::LeftMouseClicked);
+
     tgui::Button::Ptr exitButton(*grid);
     exitButton->load("gui/Black.conf");
     exitButton->setText("Exit");
@@ -50,7 +61,8 @@ void Game::runMenuScreen()
 
     grid->addWidget(label, 0, 0);
     grid->addWidget(playButton, 1, 0);
-    grid->addWidget(exitButton, 2, 0);
+    grid->addWidget(selectCarButton, 2, 0);
+    grid->addWidget(exitButton, 3, 0);
 
     if ((!playButton->isLoaded()) || (!exitButton->isLoaded()))
         throw std::runtime_error("Failed to load the menu screen. Files are missing.");
@@ -65,6 +77,54 @@ void Game::runMenuScreen()
 
         sf::sleep(sf::milliseconds(1));
     }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Game::runCarSelection()
+{
+    tgui::Picture::Ptr background(gui);
+    background->load("MenuBackground.png");
+
+    tgui::Grid::Ptr grid(gui);
+
+    auto it = cars.begin();
+    for (unsigned int i = 0; i < cars.size(); ++i, ++it)
+    {
+        tgui::Picture::Ptr preview(*grid);
+        preview->load("PreviewCar" + std::to_string(i+1) + ".png");
+        preview->setSize(SCREEN_WIDTH / (cars.size()+1), SCREEN_WIDTH / (cars.size()+1));
+
+        tgui::LoadingBar::Ptr speed(*grid);
+        speed->load("gui/Black.conf");
+        speed->setText("Speed");
+        speed->setTextColor(sf::Color(255, 255, 0, 150));
+        speed->setMaximum(MAX_SPEED);
+        speed->setValue((int)it->getTopSpeed());
+        speed->setSize(SCREEN_WIDTH / (cars.size()+1), SCREEN_WIDTH / (cars.size()+1) / 8);
+
+        tgui::LoadingBar::Ptr control(*grid);
+        control->load("gui/Black.conf");
+        control->setText("Control");
+        control->setTextColor(sf::Color(255, 255, 0, 150));
+        control->setMaximum(MAX_CONTROL);
+        control->setValue(MAX_CONTROL - (int)it->getTimeToReachTopSpeed());
+        control->setSize(SCREEN_WIDTH / (cars.size()+1), SCREEN_WIDTH / (cars.size()+1) / 8);
+
+        tgui::Button::Ptr select(*grid);
+        select->load("gui/Black.conf");
+        select->setText("Car " + std::to_string(i+1));
+        select->setSize(SCREEN_WIDTH / (cars.size()+1), SCREEN_WIDTH / (cars.size()+1) / 3);
+        select->bindCallback([this, it](){ currentCar = it; gui.removeAllWidgets(); runMenuScreen(); }, tgui::Button::LeftMouseClicked);
+
+        grid->addWidget(preview, 0, i);
+        grid->addWidget(speed, 1, i, tgui::Borders(0, 10, 0, 10));
+        grid->addWidget(control, 2, i, tgui::Borders(0, 10, 0, 10));
+        grid->addWidget(select, 3, i, tgui::Borders(0, 50, 0, 0));
+    }
+
+    grid->setSize(SCREEN_WIDTH, grid->getSize().y);
+    grid->setPosition((SCREEN_WIDTH - grid->getSize().x) / 2.0f, (SCREEN_HEIGHT - grid->getSize().y) / 2.0f);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -363,7 +423,7 @@ void Game::loadTrack()
     else if (*currentTrack == "Track3")
         playMusic(track3);
 
-    track = std::unique_ptr<Track>(new Track(*currentTrack, window));
+    track = std::unique_ptr<Track>(new Track(*currentTrack, window, *currentCar));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -23,6 +23,7 @@ public:
 
 private:
 
+    void runCarSelection();
     void runLevelSelection();
     void runGame();
     void runGameSuccess();
@@ -49,6 +50,9 @@ private:
     sf::Music track1;
     sf::Music desert;
     sf::Music track3;
+
+    std::list<Car> cars;
+    std::list<Car>::iterator currentCar = cars.end();
 
     std::vector<std::string> trackNames;
     std::vector<std::string>::iterator currentTrack = trackNames.end();

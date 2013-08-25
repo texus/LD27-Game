@@ -3,8 +3,9 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Track::Track(const std::string& name, sf::RenderWindow& window) :
-    window     (window)
+Track::Track(const std::string& name, sf::RenderWindow& window, Car& car) :
+    window(window),
+    car   (car)
 {
     // Load images
     {
@@ -54,6 +55,7 @@ Track::Track(const std::string& name, sf::RenderWindow& window) :
         nextCheckpoint = checkpoints.begin();
     }
 
+    car.reset();
     car.setPosition(sf::Vector2f(checkpoints[0].position));
     window.setView(sf::View(sf::FloatRect(car.getPosition().x - (SCREEN_WIDTH / 2.0), car.getPosition().y - (SCREEN_HEIGHT / 2.0), SCREEN_WIDTH, SCREEN_HEIGHT)));
 }

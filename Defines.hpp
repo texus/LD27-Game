@@ -7,8 +7,9 @@
 const int SCREEN_WIDTH  = 800;
 const int SCREEN_HEIGHT = 600;
 
-const float TOP_SPEED = 350;
-const float TIME_TO_REACH_TOP_SPEED = 2.5;
+const int MAX_SPEED = 600;
+const int MAX_CONTROL = 6;
+
 const float TIME_TO_REACH_MAX_VELOCITY = 0.25;
 
 const double pi = 3.14159265358979323846;

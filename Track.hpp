@@ -15,7 +15,7 @@ class Track
 {
 public:
 
-    Track(const std::string& name, sf::RenderWindow& window);
+    Track(const std::string& name, sf::RenderWindow& window, Car& car);
 
     int update(float elapsedTime);
     void draw() const;
@@ -32,7 +32,7 @@ private:
     std::vector<Checkpoint> checkpoints;
     std::vector<Checkpoint>::iterator nextCheckpoint = checkpoints.end();
 
-    Car car;
+    Car& car;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -5,15 +5,37 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Car::Car()
+Car::Car(float topSpeed, float timeToReachTopSpeed, const std::string& imageFilename) :
+    topSpeed(topSpeed),
+    timeToReachTopSpeed(timeToReachTopSpeed)
 {
-    if (!texture.loadFromFile("Car.png"))
-        throw std::runtime_error("Failed to load 'Car.png'.");
+    if (!texture.loadFromFile(imageFilename))
+        throw std::runtime_error("Failed to load '" + imageFilename + "'.");
 
     sprite.setTexture(texture);
-//    sprite.setOrigin(texture.getSize().x / 2.0f, texture.getSize().y / 2.0f);
-
     setOrigin(texture.getSize().x / 2.0f, texture.getSize().y / 2.0f);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+float Car::getTopSpeed() const
+{
+    return topSpeed;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+float Car::getTimeToReachTopSpeed() const
+{
+    return timeToReachTopSpeed;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Car::reset()
+{
+    speed = sf::Vector2f(0, 0);
+    velocity = sf::Vector2f(0, 0);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,7 +72,7 @@ void Car::update(const sf::Image& trackArea, float elapsedTime)
             }
             else
             {
-                speed.x -= (10.0 * speed.x / TOP_SPEED) * TOP_SPEED / TIME_TO_REACH_TOP_SPEED * elapsedTime;
+                speed.x -= (10.0 * speed.x / topSpeed) * topSpeed / timeToReachTopSpeed * elapsedTime;
                 if (oldSpeed.x * speed.x < 0)
                     speed.x = 0;
             }
@@ -67,7 +89,7 @@ void Car::update(const sf::Image& trackArea, float elapsedTime)
             }
             else
             {
-                speed.y -= (10.0 * speed.y / TOP_SPEED) * TOP_SPEED / TIME_TO_REACH_TOP_SPEED * elapsedTime;
+                speed.y -= (10.0 * speed.y / topSpeed) * topSpeed / timeToReachTopSpeed * elapsedTime;
                 if (oldSpeed.y * speed.y < 0)
                     speed.y = 0;
             }
@@ -105,29 +127,29 @@ void Car::update(const sf::Image& trackArea, float elapsedTime)
 
         if (velocity.x != 0)
         {
-            if ((speed.x / (velocity.x * TOP_SPEED / TIME_TO_REACH_TOP_SPEED * elapsedTime)) > 200)
+            if ((speed.x / (velocity.x * topSpeed / timeToReachTopSpeed * elapsedTime)) > 200)
             {
-                speed.x -= (3.0 * speed.x / TOP_SPEED) * TOP_SPEED / TIME_TO_REACH_TOP_SPEED * elapsedTime;
+                speed.x -= (3.0 * speed.x / topSpeed) * topSpeed / timeToReachTopSpeed * elapsedTime;
                 if (oldSpeed.x * speed.x < 0)
                     speed.x = 0;
             }
         }
         if (velocity.y != 0)
         {
-            if ((speed.y / (velocity.y * TOP_SPEED / TIME_TO_REACH_TOP_SPEED * elapsedTime)) > 200)
+            if ((speed.y / (velocity.y * topSpeed / timeToReachTopSpeed * elapsedTime)) > 200)
             {
-                speed.y -= (3.0 * speed.y / TOP_SPEED) * TOP_SPEED / TIME_TO_REACH_TOP_SPEED * elapsedTime;
+                speed.y -= (3.0 * speed.y / topSpeed) * topSpeed / timeToReachTopSpeed * elapsedTime;
                 if (oldSpeed.y * speed.y < 0)
                     speed.y = 0;
             }
         }
     }
 
-    speed += velocity * TOP_SPEED / TIME_TO_REACH_TOP_SPEED * elapsedTime;
+    speed += velocity * topSpeed / timeToReachTopSpeed * elapsedTime;
 
     float speedLength = std::sqrt(std::pow(speed.x, 2) + std::pow(speed.y, 2));
-    if (speedLength > TOP_SPEED)
-        speed /= (speedLength / TOP_SPEED);
+    if (speedLength > topSpeed)
+        speed /= (speedLength / topSpeed);
 
     // If the car goes of the track then slow it down
     {
@@ -147,15 +169,15 @@ void Car::update(const sf::Image& trackArea, float elapsedTime)
          || (trackArea.getPixel(bottomLeft.x, bottomLeft.y) == sf::Color::White)
          || (trackArea.getPixel(bottomRight.x, bottomRight.y) == sf::Color::White))
         {
-            if (speed.x < -0.3 * TOP_SPEED)
-                speed.x = -0.3 * TOP_SPEED;
-            else if (speed.x > 0.3 * TOP_SPEED)
-                speed.x = 0.3 * TOP_SPEED;
+            if (speed.x < -0.3 * topSpeed)
+                speed.x = -0.3 * topSpeed;
+            else if (speed.x > 0.3 * topSpeed)
+                speed.x = 0.3 * topSpeed;
 
-            if (speed.y < -0.3 * TOP_SPEED)
-                speed.y = -0.3 * TOP_SPEED;
-            else if (speed.y > 0.3 * TOP_SPEED)
-                speed.y = 0.3 * TOP_SPEED;
+            if (speed.y < -0.3 * topSpeed)
+                speed.y = -0.3 * topSpeed;
+            else if (speed.y > 0.3 * topSpeed)
+                speed.y = 0.3 * topSpeed;
         }
 
     }

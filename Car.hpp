@@ -12,7 +12,12 @@ class Car : public sf::Drawable, public sf::Transformable
 {
 public:
 
-    Car();
+    Car(float topSpeed, float timeToReachTopSpeed, const std::string& imageFilename);
+
+    float getTopSpeed() const;
+    float getTimeToReachTopSpeed() const;
+
+    void reset();
 
     void update(const sf::Image& trackArea, float elapsedTime);
     void draw(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -25,6 +30,9 @@ private:
 
     sf::Vector2f speed;
     sf::Vector2f velocity;
+
+    float topSpeed;
+    float timeToReachTopSpeed;
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
