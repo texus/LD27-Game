@@ -9,8 +9,14 @@ Game::Game() :
     if (gui.setGlobalFont("gui/DejaVuSans.ttf") == false)
         throw std::runtime_error("Can't load font. Files are missing.");
 
-    if (!beep.openFromFile("beep.wav"))
+    if ((!beep.openFromFile("beep.wav"))
+     || (!menu.openFromFile("DST-MapLands2.wav"))
+     || (!track1.openFromFile("DST-Blam.wav"))
+     || (!desert.openFromFile("DST-Desert.wav"))
+     || (!track3.openFromFile("DST-TheMusic.wav")))
         throw std::runtime_error("Can't load sound. Files are missing.");
+
+
 
     loadTrackList();
 }
@@ -19,6 +25,8 @@ Game::Game() :
 
 void Game::runMenuScreen()
 {
+    playMusic(menu);
+
     tgui::Picture::Ptr background(gui);
     background->load("MenuBackground.png");
 
@@ -348,9 +356,28 @@ void Game::loadTrackList()
 void Game::loadTrack()
 {
     if (currentTrack == trackNames.end())
-        throw std::runtime_error("Trying to load the next track when there are no more tracks.");
+        throw std::runtime_error("Trying to load an unexisting track.");
+
+    if (*currentTrack == "Track1")
+        playMusic(track1);
+    else if (*currentTrack == "Track2")
+        playMusic(desert);
+    else if (*currentTrack == "Track3")
+        playMusic(track3);
 
     track = std::unique_ptr<Track>(new Track(*currentTrack, window));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Game::playMusic(sf::Music& music)
+{
+    menu.stop();
+    track1.stop();
+    desert.stop();
+    track3.stop();
+
+    music.play();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

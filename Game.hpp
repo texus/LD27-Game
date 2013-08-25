@@ -36,12 +36,19 @@ private:
     void loadTrackList();
     void loadTrack();
 
+    void playMusic(sf::Music& music);
+
+
 private:
 
     sf::RenderWindow window;
     tgui::Gui gui;
 
     sf::Music beep;
+    sf::Music menu;
+    sf::Music track1;
+    sf::Music desert;
+    sf::Music track3;
 
     std::vector<std::string> trackNames;
     std::vector<std::string>::iterator currentTrack = trackNames.end();

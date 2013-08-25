@@ -147,15 +147,15 @@ void Car::update(const sf::Image& trackArea, float elapsedTime)
          || (trackArea.getPixel(bottomLeft.x, bottomLeft.y) == sf::Color::White)
          || (trackArea.getPixel(bottomRight.x, bottomRight.y) == sf::Color::White))
         {
-            if (speed.x < -0.2 * TOP_SPEED)
-                speed.x = -0.2 * TOP_SPEED;
-            else if (speed.x > 0.2 * TOP_SPEED)
-                speed.x = 0.2 * TOP_SPEED;
+            if (speed.x < -0.3 * TOP_SPEED)
+                speed.x = -0.3 * TOP_SPEED;
+            else if (speed.x > 0.3 * TOP_SPEED)
+                speed.x = 0.3 * TOP_SPEED;
 
-            if (speed.y < -0.2 * TOP_SPEED)
-                speed.y = -0.2 * TOP_SPEED;
-            else if (speed.y > 0.2 * TOP_SPEED)
-                speed.y = 0.2 * TOP_SPEED;
+            if (speed.y < -0.3 * TOP_SPEED)
+                speed.y = -0.3 * TOP_SPEED;
+            else if (speed.y > 0.3 * TOP_SPEED)
+                speed.y = 0.3 * TOP_SPEED;
         }
 
     }
