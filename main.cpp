@@ -3,7 +3,7 @@
 int main()
 {
     Game game;
-    game.run();
+    game.runMenuScreen();
 /*
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Racer", sf::Style::Titlebar | sf::Style::Close);
 

@@ -18,14 +18,19 @@ class Game
 public:
 
          Game();
-    void run();
+    void runMenuScreen();
 
 
 private:
 
+    void runLevelSelection();
+    void runGame();
+    void runGameSuccess();
+    void runGameFailed();
+
     void mainLoop();
     void handleEvents();
-    int update(float elapsedTime);
+    void update(float elapsedTime);
     void render();
 
     void loadTrackList();

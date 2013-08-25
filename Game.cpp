@@ -7,16 +7,103 @@ Game::Game() :
     gui(window)
 {
     if (gui.setGlobalFont("gui/DejaVuSans.ttf") == false)
-        throw std::runtime_error("Exception while loading font. Files are missing.");
+        throw std::runtime_error("Can't load font. Files are missing.");
 
-    beep.openFromFile("beep.wav");
+    if (!beep.openFromFile("beep.wav"))
+        throw std::runtime_error("Can't load sound. Files are missing.");
+
+    loadTrackList();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Game::run()
+void Game::runMenuScreen()
 {
-    loadTrackList();
+    tgui::Picture::Ptr background(gui);
+    background->load("MenuBackground.png");
+
+    tgui::Grid::Ptr grid(gui);
+    grid->setSize(800, 600);
+
+    tgui::Label::Ptr label(*grid);
+    label->load("gui/Black.conf");
+    label->setText("RACER");
+    label->setTextSize(100);
+
+    tgui::Button::Ptr playButton(*grid);
+    playButton->load("gui/Black.conf");
+    playButton->setText("Play");
+    playButton->setSize(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 8);
+    playButton->bindCallback([this](){ gui.removeAllWidgets(); runLevelSelection(); }, tgui::Button::LeftMouseClicked);
+
+    tgui::Button::Ptr exitButton(*grid);
+    exitButton->load("gui/Black.conf");
+    exitButton->setText("Exit");
+    exitButton->setSize(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 8);
+    exitButton->bindCallback([this](){ window.close(); }, tgui::Button::LeftMouseClicked);
+
+    grid->addWidget(label, 0, 0);
+    grid->addWidget(playButton, 1, 0);
+    grid->addWidget(exitButton, 2, 0);
+
+    if ((!playButton->isLoaded()) || (!exitButton->isLoaded()))
+        throw std::runtime_error("Failed to load the menu screen. Files are missing.");
+
+    while (window.isOpen())
+    {
+        handleEvents();
+
+        window.clear();
+        gui.draw();
+        window.display();
+
+        sf::sleep(sf::milliseconds(1));
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Game::runLevelSelection()
+{
+    tgui::Picture::Ptr background(gui);
+    background->load("MenuBackground.png");
+
+    tgui::Grid::Ptr grid(gui);
+    grid->setSize(800, 600);
+
+    tgui::Label::Ptr label(*grid);
+    label->load("gui/Black.conf");
+    label->setText("RACER");
+    label->setTextSize(100);
+    grid->addWidget(label, 0, 0);
+
+    for (unsigned int i = 0; i < trackNames.size(); ++i)
+    {
+        tgui::Button::Ptr button(*grid);
+        button->load("gui/Black.conf");
+        button->setSize(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 10);
+        button->setText("Level " + std::to_string(i+1));
+        button->bindCallback([this, i](){ gui.removeAllWidgets(); currentTrack = trackNames.begin() + i; runGame(); }, tgui::Button::LeftMouseClicked);
+
+        grid->addWidget(button, i+1, 0);
+    }
+
+    while (window.isOpen())
+    {
+        handleEvents();
+
+        window.clear();
+        gui.draw();
+        window.display();
+
+        sf::sleep(sf::milliseconds(1));
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Game::runGame()
+{
     loadTrack();
 
     try
@@ -60,6 +147,97 @@ void Game::run()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void Game::runGameSuccess()
+{
+    tgui::Picture::Ptr background(gui);
+    background->load("MenuBackground.png");
+
+    tgui::Grid::Ptr grid(gui);
+    grid->setSize(800, 600);
+
+    tgui::Label::Ptr label(*grid);
+    label->load("gui/Black.conf");
+    label->setText("RACER");
+    label->setTextSize(100);
+
+    tgui::Label::Ptr congrats(*grid);
+    congrats->load("gui/Black.conf");
+    congrats->setText("Level complete!");
+    congrats->setTextSize(50);
+
+    tgui::Button::Ptr backButton(*grid);
+    backButton->load("gui/Black.conf");
+    backButton->setSize(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 8);
+    backButton->setText("Back to menu");
+    backButton->bindCallback([this](){ gui.removeAllWidgets(); runMenuScreen(); }, tgui::Button::LeftMouseClicked);
+
+    grid->addWidget(label, 0, 0);
+    grid->addWidget(congrats, 1, 0);
+    grid->addWidget(backButton, 2, 0);
+
+    while (window.isOpen())
+    {
+        handleEvents();
+
+        window.clear();
+        gui.draw();
+        window.display();
+
+        sf::sleep(sf::milliseconds(1));
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Game::runGameFailed()
+{
+    tgui::Picture::Ptr background(gui);
+    background->load("MenuBackground.png");
+
+    tgui::Grid::Ptr grid(gui);
+    grid->setSize(800, 600);
+
+    tgui::Label::Ptr label(*grid);
+    label->load("gui/Black.conf");
+    label->setText("RACER");
+    label->setTextSize(100);
+
+    tgui::Label::Ptr congrats(*grid);
+    congrats->load("gui/Black.conf");
+    congrats->setText("Level failed!");
+    congrats->setTextSize(50);
+
+    tgui::Button::Ptr replayButton(*grid);
+    replayButton->load("gui/Black.conf");
+    replayButton->setSize(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 8);
+    replayButton->setText("Retry level");
+    replayButton->bindCallback([this](){ gui.removeAllWidgets(); runGame(); }, tgui::Button::LeftMouseClicked);
+
+    tgui::Button::Ptr backButton(*grid);
+    backButton->load("gui/Black.conf");
+    backButton->setSize(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 8);
+    backButton->setText("Back to menu");
+    backButton->bindCallback([this](){ gui.removeAllWidgets(); runMenuScreen(); }, tgui::Button::LeftMouseClicked);
+
+    grid->addWidget(label, 0, 0);
+    grid->addWidget(congrats, 1, 0);
+    grid->addWidget(replayButton, 2, 0);
+    grid->addWidget(backButton, 3, 0);
+
+    while (window.isOpen())
+    {
+        handleEvents();
+
+        window.clear();
+        gui.draw();
+        window.display();
+
+        sf::sleep(sf::milliseconds(1));
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Game::mainLoop()
 {
     sf::Clock clock;
@@ -67,19 +245,7 @@ void Game::mainLoop()
     while (window.isOpen())
     {
         handleEvents();
-
-        int ret = update(clock.restart().asSeconds());
-        if (ret == 1)
-        {
-            window.close();
-            std::cout << "Level completed" << std::endl;
-        }
-        else if (ret == 2)
-        {
-            window.close();
-            std::cout << "Level FAILED" << std::endl;
-        }
-
+        update(clock.restart().asSeconds());
         render();
 
         sf::sleep(sf::milliseconds(1));
@@ -95,12 +261,14 @@ void Game::handleEvents()
     {
         if (event.type == sf::Event::Closed)
             window.close();
+
+        gui.handleEvent(event);
     }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int Game::update(float elapsedTime)
+void Game::update(float elapsedTime)
 {
     int ret = track->update(elapsedTime);
 
@@ -108,27 +276,30 @@ int Game::update(float elapsedTime)
     {
         // Checkpoint reached
         countdown = 10;
-        return 0;
+        return;
     }
     else if (ret == 2)
     {
-        // Level finished
-        return 1;
+        window.setView(window.getDefaultView());
+        runGameSuccess();
+        return;
     }
 
     countdown -= elapsedTime;
 
     if (countdown <= 0)
-        return 2;
+    {
+        window.setView(window.getDefaultView());
+        runGameFailed();
+        return;
+    }
 
     if (static_cast<int>(countdown + 0.5) != roundedCountdown)
     {
         roundedCountdown = static_cast<int>(countdown + 0.5);
-        beep.setVolume(100 - roundedCountdown * 10);
+        beep.setVolume(60 - std::min(roundedCountdown * 10, 55));
         beep.play();
     }
-
-    return 0;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
