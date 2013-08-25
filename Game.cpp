@@ -16,8 +16,6 @@ Game::Game() :
      || (!track3.openFromFile("DST-TheMusic.wav")))
         throw std::runtime_error("Can't load sound. Files are missing.");
 
-
-
     loadTrackList();
 }
 
