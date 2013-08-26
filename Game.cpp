@@ -6,6 +6,8 @@ Game::Game() :
     window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Racer", sf::Style::Titlebar | sf::Style::Close),
     gui(window)
 {
+    window.setFramerateLimit(60);
+
     if (gui.setGlobalFont("gui/DejaVuSans.ttf") == false)
         throw std::runtime_error("Can't load font. Files are missing.");
 
