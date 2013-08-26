@@ -12,10 +12,10 @@ Game::Game() :
         throw std::runtime_error("Can't load font. Files are missing.");
 
     if ((!beep.openFromFile("assets/beep.wav"))
-     || (!menu.openFromFile("assets/DST-MapLands2.wav"))
-     || (!track1.openFromFile("assets/DST-Blam.wav"))
-     || (!desert.openFromFile("assets/DST-Desert.wav"))
-     || (!track3.openFromFile("assets/DST-TheMusic.wav")))
+     || (!menu.openFromFile("assets/DST-MapLands2.ogg"))
+     || (!track1.openFromFile("assets/DST-Blam.ogg"))
+     || (!desert.openFromFile("assets/DST-Desert.ogg"))
+     || (!track3.openFromFile("assets/DST-TheMusic.ogg")))
         throw std::runtime_error("Can't load sound. Files are missing.");
 
     cars.emplace(cars.end(), 260, 1.0, "assets/Car1.png");
