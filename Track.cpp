@@ -28,7 +28,7 @@ Track::Track(const std::string& name, sf::RenderWindow& window, Car& car) :
         file >> carRotation;
         if (!carRotation.empty())
         {
-            car.setRotation(std::stoi(carRotation));
+            car.setRotation(std::atoi(carRotation.c_str()));
 
             while (!file.eof())
             {
@@ -42,9 +42,9 @@ Track::Track(const std::string& name, sf::RenderWindow& window, Car& car) :
                     continue;
 
                 Checkpoint checkpoint;
-                checkpoint.radius = std::stoi(radius);
-                checkpoint.position.x = std::stoi(posX);
-                checkpoint.position.y = std::stoi(posY);
+                checkpoint.radius = std::atoi(radius.c_str());
+                checkpoint.position.x = std::atoi(posX.c_str());
+                checkpoint.position.y = std::atoi(posY.c_str());
                 checkpoints.push_back(std::move(checkpoint));
             }
         }

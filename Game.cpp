@@ -92,7 +92,7 @@ void Game::runCarSelection()
     for (unsigned int i = 0; i < cars.size(); ++i, ++it)
     {
         tgui::Picture::Ptr preview(*grid);
-        preview->load("PreviewCar" + std::to_string(i+1) + ".png");
+        preview->load("PreviewCar" + tgui::to_string(i+1) + ".png");
         preview->setSize(SCREEN_WIDTH / (cars.size()+1), SCREEN_WIDTH / (cars.size()+1));
 
         tgui::LoadingBar::Ptr speed(*grid);
@@ -113,7 +113,7 @@ void Game::runCarSelection()
 
         tgui::Button::Ptr select(*grid);
         select->load("gui/Black.conf");
-        select->setText("Car " + std::to_string(i+1));
+        select->setText("Car " + tgui::to_string(i+1));
         select->setSize(SCREEN_WIDTH / (cars.size()+1), SCREEN_WIDTH / (cars.size()+1) / 3);
         select->bindCallback([this, it](){ currentCar = it; gui.removeAllWidgets(); runMenuScreen(); }, tgui::Button::LeftMouseClicked);
 
@@ -148,7 +148,7 @@ void Game::runLevelSelection()
         tgui::Button::Ptr button(*grid);
         button->load("gui/Black.conf");
         button->setSize(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 10);
-        button->setText("Level " + std::to_string(i+1));
+        button->setText("Level " + tgui::to_string(i+1));
         button->bindCallback([this, i](){ gui.removeAllWidgets(); currentTrack = trackNames.begin() + i; runGame(); }, tgui::Button::LeftMouseClicked);
 
         grid->addWidget(button, i+1, 0);
@@ -376,7 +376,7 @@ void Game::render()
 
     track->draw();
 
-    sf::Text text(std::to_string(roundedCountdown), gui.getGlobalFont(), 30);
+    sf::Text text(tgui::to_string(roundedCountdown), gui.getGlobalFont(), 30);
     text.setColor(sf::Color(255 - ((countdown / 10.0) * 255), (countdown / 10.0) * 255, 0));
     text.setPosition(window.getView().getCenter() - (window.getView().getSize() / 2.0f));
     window.draw(text);
