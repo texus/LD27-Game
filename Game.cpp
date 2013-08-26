@@ -21,7 +21,7 @@ Game::Game() :
     cars.emplace(cars.end(), 260, 1.0, "Car1.png");
     cars.emplace(cars.end(), 375, 2.25, "Car2.png");
     cars.emplace(cars.end(), 500, 3, "Car3.png");
-    currentCar = cars.begin();
+    currentCar = ++cars.begin();
 
     loadTrackList();
 }
